@@ -1,4 +1,5 @@
 import numpy as np
+
 def step_2_3(dots, n):
     f_dots = np.array([f(x) for x in dots])
     x_l = dots[np.argmin(f_dots)]

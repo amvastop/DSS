@@ -13,8 +13,8 @@ def dichotomy_method(E, l, f, a, b):
 
 if __name__ == "__main__":
     f = lambda x : 2 * x ** 2 - 12 * x
-    E = 0.2 
-    l = 1
+    E = 0.000001
+    l = 0.00001 # l < E
     x0 = 5 
     h = 5
     segment = sven_method(x0, h, f)

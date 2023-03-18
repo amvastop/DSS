@@ -1,5 +1,4 @@
 import numpy as np
-
 from Sven_method import sven_method
 from dichotomy_method import dichotomy_method
 
@@ -32,8 +31,8 @@ def grad_f(dx, x, f):
 
 def f_t(x, g_f, f ):
     t = lambda t: f(x - g_f * t)
-    E = 0.00001
-    l = 0.001
+    E = 0.000001
+    l = 0.00001
     x0 = 0 
     h = 1
     segment = sven_method(x0, h, t)
@@ -54,6 +53,6 @@ if __name__ == "__main__":
     x0 = np.array(x0)
     e1 = 0.1
     e2 = 0.15
-    M = 10
+    M = 1
     ans = steepest_gradient_descent_method(x0, e1, e2, M, f, df)
     print(ans)
