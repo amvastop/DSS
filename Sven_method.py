@@ -18,4 +18,5 @@ def sven_method(x0, h, f):
 
     if h > 0:
         return(tmp, x1)
+    return (x1, tmp)
     
