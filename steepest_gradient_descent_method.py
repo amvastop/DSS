@@ -26,7 +26,8 @@ def grad_f(dx, x, f):
         tmp2[i] = tmp2[i] + dx
         array_x.append([tmp2, tmp])
     array_x = np.array(array_x)
-    tmp = [(f(x[0]) - f(x[1])) / (2 * dx) for x in array_x]
+    print(array_x)
+    tmp = [(f(cloum[0]) - f(cloum[1])) / (2 * dx) for cloum in array_x]
     return np.array(tmp)
 
 def f_t(x, g_f, f ):

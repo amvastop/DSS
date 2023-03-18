@@ -31,6 +31,7 @@ if __name__ == "__main__":
     df = lambda x : grad_f(dx, x, f)
     x0 =[0.5, 1.0]
     x0 = np.array(x0)
+    g = df(x0)
     e1 = 0.1
     e2 = 0.15
     M = 10
