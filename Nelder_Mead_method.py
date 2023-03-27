@@ -1,40 +1,45 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-def step_2_3(dots, n):
-    f_dots = np.array([f(x) for x in dots])
-    x_l = dots[np.argmin(f_dots)]
-    index = np.argmax(f_dots)
-    x_h = dots[index]
-    tmp = np.delete(f_dots, index)
-    x_s = dots[np.argmax(tmp)]
-    tmp = np.delete(dots, index, 0)
-    x_n2 = 1 / n * (np.sum(tmp,  axis=0))
-    return f_dots, x_n2, x_l, x_h, x_s, index
+def step_2_3(dots, n, dtype, plot, array_dots):
+    dots = np.array(dots, dtype=dtype) 
+    dots = np.sort(dots, order='f_x')[::-1]
+    if plot:
+        array_dots.append(list(dots['x'].copy()))
+    x_n2 = 1 / n * (np.sum(dots[1:]['x'],  axis=0)) # центр тяжести
+    return dots, x_n2
 
 
-def nelder_mead_method(a, b, y, E, n, f, dots=None):
+def nelder_mead_method(a, b, y, E, n, f, dots=None, plot=False):
+    array_dots = []
+    dtype = [('f_x', float), ('x', np.float64, (n,))]
     if dots is None:
         dots = np.random.random((n + 1, n))
         print(dots)
-    f_dots, x_n2, x_l, x_h, x_s, index = step_2_3(dots, n)
-    tmp = np.sqrt(np.sum((f_dots - f(x_n2)) ** 2) / (n + 1))
-    while np.sqrt(np.sum((f_dots - f(x_n2)) ** 2) / (n + 1)) >= E:
-        x_n3 = x_n2 + a * (x_n2 - x_h)
-        if f(x_n3) <= f(x_l):
-            x_n4 = x_n2 + y * (x_n3 - x_n2)
-            if f(x_n4) < f(x_l):
+    dots = [(f(x), x) for x in dots ]
+    dots, x_n2 = step_2_3(dots, n, dtype, plot, array_dots)
+    while np.sqrt(np.sum((dots['f_x'] - f(x_n2)) ** 2) / (n + 1)) >= E:
+        x_n3 = x_n2 + a * (x_n2 - dots[0]['x']) # отражения
+        f_xn3 = f(x_n3)
+        if f_xn3 <= dots[-1]['f_x']:
+            x_n4 = x_n2 + y * (x_n3 - x_n2) # растяжение
+            if f(x_n4) < dots[-1]['f_x']:
                 tmp = x_n4
             else:
                 tmp = x_n3
-            dots[index] = tmp
-        elif f(x_s) < f(x_n3) <= f(x_h):
-            dots[index] = x_n2 + b * (x_h - x_n2) # x n+5
-        elif f(x_l) < f(x_n3) <= f(x_s):
-            dots[index] = x_n3
-        elif f(x_n3) > f(x_h):
-            dots = x_l - 0.5 * (dots - x_l)
-        f_dots, x_n2, x_l, x_h, x_s, index = step_2_3(dots, n)
-    return x_l
+            dots[0] = np.array((f(tmp), tmp), dtype=dtype) 
+        elif dots[1]['f_x'] < f_xn3 <= dots[0]['f_x']:
+            tmp = x_n2 + b * (dots[0]['x'] - x_n2) # сжатия
+            dots[0] = np.array((f(tmp), tmp), dtype=dtype) 
+        elif dots[-1]['f_x'] < f_xn3 <= dots[1]['f_x']:
+            dots[0] = np.array((f(x_n3), x_n3), dtype=dtype) 
+        elif f_xn3 > dots[0]['f_x']:
+            dots = dots[-1]['x'] + 0.5 * (dots['x'] - dots[-1]['x'])
+            dots = [(f(x), x) for x in dots ]
+        dots, x_n2 = step_2_3(dots, n, dtype, plot, array_dots)
+    if plot:
+        return array_dots, dots[-1]['x']
+    return dots[-1]['x']
 
 
 
@@ -43,6 +48,20 @@ if __name__ == "__main__":
     f = lambda x : 4 * (x[0] - 5) ** 2 + (x[1] - 6) ** 2
     E = 0.2
     a, b, y = 1, 0.5, 2
-    #dots = np.array([[8,9], [10, 11], [8, 11]], dtype=float)
-    ans = nelder_mead_method(a, b, y, E, n, f)
-    print(f(ans), f((5,6.25)))
+    dots = np.array([[8,9], [10, 11], [8, 11]], dtype=float)
+    ans = nelder_mead_method(a, b, y, E, n, f, dots)
+    print(f(ans), f((5, 6.25)))
+    array_dots, ans = nelder_mead_method(a, b, y, E, n, f, dots, plot=True)
+    X = []
+    Y = []
+
+    for dots in array_dots:
+        for x, y in dots:
+            X.append(x)
+            Y.append(y)
+        X.append(dots[0][0])
+        Y.append(dots[0][1])
+
+    plt.plot(X, Y, marker=".", c="g")
+    plt.scatter(5, 6.25, color='orange', s=40, marker='o')
+    plt.show()

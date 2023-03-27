@@ -1,6 +1,8 @@
 from Sven_method import sven_method
+import matplotlib.pyplot as plt
 
 def dichotomy_method(E, l, f, a, b):
+
     while abs(a - b) > l:
         y = (a + b - E) / 2
         z = (a + b + E) / 2
@@ -8,6 +10,7 @@ def dichotomy_method(E, l, f, a, b):
             a = y
         else:
             b = z
+
     return (a + b) / 2
 
 

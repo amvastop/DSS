@@ -1,14 +1,18 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from Sven_method import sven_method
 from dichotomy_method import dichotomy_method
 
-def steepest_gradient_descent_method(x, e1, e2, M, f, df):
+def steepest_gradient_descent_method(x, e1, e2, M, f, df, plot=False):
+    array_dots = []
     k = 0
     g_f = df(x)
     while np.linalg.norm(g_f, ord=2)  >= e1 and k < M:
         t = f_t(x, g_f, f)
         tmp = x
         x = x - t * g_f
+        if plot:
+            array_dots.append(x.copy())
         if np.linalg.norm(x - tmp, ord=2) < e2  and abs( f(x) - f(tmp)) < e2:
             break
         k +=1
@@ -49,7 +53,7 @@ if __name__ == "__main__":
     dx = 0.005
     f = lambda x : 2 * x[0] ** 2 + x[0] * x[1] + x[1] ** 2  
     df = lambda x : grad_f(dx, x, f)
-    x0 =[0.5, 1.0]
+    x0 = [0.5, 1.0]
     x0 = np.array(x0)
     e1 = 0.1
     e2 = 0.15
