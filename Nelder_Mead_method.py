@@ -10,13 +10,15 @@ def step_2_3(dots, n, dtype, plot, array_dots):
     return dots, x_n2
 
 
-def nelder_mead_method(a, b, y, E, n, f, dots=None, plot=False):
+def nelder_mead_method(a, b, y, E, n, f, dots=None, plot=False, x0=None, h=10):
     array_dots = []
     dtype = [('f_x', float), ('x', np.float64, (n,))]
+    if  x0 is not None:
+        dots = np.full((n + 1, n), x0)
+        np.fill_diagonal(dots, dots.diagonal() + h)
     if dots is None:
         dots = np.random.random((n + 1, n))
-        print(dots)
-    dots = [(f(x), x) for x in dots ]
+    dots = [(f(x), x) for x in dots]
     dots, x_n2 = step_2_3(dots, n, dtype, plot, array_dots)
     while np.sqrt(np.sum((dots['f_x'] - f(x_n2)) ** 2) / (n + 1)) >= E:
         x_n3 = x_n2 + a * (x_n2 - dots[0]['x']) # отражения

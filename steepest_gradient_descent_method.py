@@ -1,9 +1,12 @@
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 from Sven_method import sven_method
 from dichotomy_method import dichotomy_method
 
-def steepest_gradient_descent_method(x, e1, e2, M, f, df, plot=False):
+def steepest_gradient_descent_method(x, e1, e2, M, f, plot=False,):
+    dx = 0.0000001
+    df = lambda x : grad_f(dx, x, f)
     array_dots = []
     k = 0
     g_f = df(x)
@@ -33,12 +36,13 @@ def grad_f(dx, x, f):
     tmp = [(f(cloum[0]) - f(cloum[1])) / (2 * dx) for cloum in array_x]
     return np.array(tmp)
 
-def f_t(x, g_f, f ):
+def f_t(x, g_f, f,):
     t = lambda t: f(x - g_f * t)
-    E = 0.000001
+    E = 0.000000001
     l = 0.00001
-    x0 = 0 
-    h = 1
+    random.seed( version=2)
+    h = random.uniform(0.1, 1000)
+    x0 = random.uniform(-1000, 1000)
     segment = sven_method(x0, h, t)
     if segment:
         a, b = segment 
@@ -58,5 +62,5 @@ if __name__ == "__main__":
     e1 = 0.1
     e2 = 0.15
     M = 1
-    ans = steepest_gradient_descent_method(x0, e1, e2, M, f, df)
+    ans = steepest_gradient_descent_method(x0, e1, e2, M, f)
     print(ans)
